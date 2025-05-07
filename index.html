@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<!-- add reset css -->
+	<link rel="stylesheet" href="reset.css">
+    <title>Type - Pedestrian Tactics</title>
+    <style>
+        @font-face {
+            font-family: "Hyperwalk VF";
+            src:
+                url("fonts/HyperwalkVF.woff2") format("woff2"),
+                url("fonts/HyperwalkVF.woff") format("woff"),
+                url("fonts/HyperwalkVF.ttf") format("ttf");
+        }
+        @font-face {
+            font-family: "Hyperwalk Mono VF";
+            src:
+                url("fonts/HyperwalkMonoVF.woff2") format("woff2"),
+                url("fonts/HyperwalkMonoVF.woff") format("woff"),
+                url("fonts/HyperwalkMonoVF.ttf") format("ttf");
+        }
+
+        :root {
+            --color-fg: white;
+            --color-bg: black;
+			--color-accent: #444444;
+            background-color: var(--color-bg);
+            color: var(--color-fg);
+        }
+
+        body, button {
+            font-family: "Hyperwalk VF";
+			font-weight: 60;
+            font-size: 14pt;
+            letter-spacing: 0.04em;
+            margin: 0;
+            padding: 0;
+        }
+
+		button {
+			padding: .2rem .2rem 0rem .3rem;
+			/* remove the background and just make it an outlined box */
+			background: none;
+			border: 1px solid var(--color-accent);
+			color: var(--color-accent);
+		}
+
+        #bottom p {
+            height: auto;
+            margin-bottom: 1rem;
+        }
+
+        #container {
+            display: grid;
+            place-items: center;
+            height: 100vh;
+            margin: 0;
+            padding: 0;
+        }
+
+        #top-right {
+            position: fixed;
+            top: 1rem;
+            right: 1rem;
+        }
+
+        #bottom {
+            position: fixed;
+            bottom: 1rem;
+            left: 1rem;
+            right: 1rem;
+            padding-top: 1rem;
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            column-gap: 1rem;
+        }
+
+        #editable-text {
+            border: none;
+            outline: none;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+            word-break: break-all;
+        }
+
+        .slider {
+            appearance: none;
+            height: 1px;
+            border-radius: 0;
+            width: 100%;
+            outline: none;
+            background-color: var(--color-fg);
+            margin: 0;
+            padding: 0;
+            margin-bottom: 1rem;
+        }
+
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 24px;
+            height: 24px;
+            background: var(--color-bg);
+            outline: 1px solid var(--color-fg);
+            border-radius: 100%;
+            cursor: pointer;
+        }
+
+        @media (max-width: 640px) {
+            #bottom {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="top-right">
+        <button id="edit-button" onclick="toggleControls()">Edit</button>
+    </div>
+    <div id="bottom" class="hideable">
+        <div>
+            <p class="caption mono">Size <span id="font-size-display">128</span>pt</p>
+            <input
+                class="slider"
+                type="range"
+                min="32"
+                max="1024"
+                step="1"
+                id="font-size-slider"
+                oninput="updateFontSize()"
+            />
+        </div>
+        <div>
+            <p class="caption mono">Weight <span id="font-weight-display">80</span></p>
+            <input
+                class="slider"
+                type="range"
+                min="60"
+                max="120"
+                step="1"
+                id="font-weight-slider"
+                oninput="updateFontWeight()"
+            />
+        </div>
+        <div>
+            <p class="caption mono">Letter spacing <span id="font-letter-spacing-display">0</span>em</p>
+            <input
+                class="slider"
+                type="range"
+                min="-0.1"
+                max="0.2"
+                step="0.01"
+                id="font-letter-spacing-slider"
+                oninput="updateLetterSpacing()"
+            />
+        </div>
+    </div>
+    <div id="container">
+        <div
+            id="editable-text"
+            contenteditable="true"
+            spellcheck="false"
+            style="font-size: 128px; font-weight: 80; letter-spacing: 0em;"
+        >
+            Edit me
+        </div>
+    </div>
+
+    <script>
+        let controlsHidden = true;
+
+        function toggleControls() {
+            controlsHidden = !controlsHidden;
+            const hideable = document.querySelectorAll(".hideable");
+            hideable.forEach((el) => {
+                el.style.visibility = controlsHidden ? "hidden" : "visible";
+            });
+            const editableText = document.getElementById("editable-text");
+            editableText.contentEditable = !controlsHidden;
+            document.getElementById("edit-button").innerText = controlsHidden ? "Edit" : "Done";
+        }
+
+        function updateFontSize() {
+            const fontSize = document.getElementById("font-size-slider").value;
+            document.getElementById("font-size-display").innerText = fontSize;
+            document.getElementById("editable-text").style.fontSize = `${fontSize}px`;
+        }
+
+        function updateFontWeight() {
+            const fontWeight = document.getElementById("font-weight-slider").value;
+            document.getElementById("font-weight-display").innerText = fontWeight;
+            document.getElementById("editable-text").style.fontWeight = fontWeight;
+        }
+
+        function updateLetterSpacing() {
+            const letterSpacing = document.getElementById("font-letter-spacing-slider").value;
+            document.getElementById("font-letter-spacing-display").innerText = letterSpacing;
+            document.getElementById("editable-text").style.letterSpacing = `${letterSpacing}em`;
+        }
+
+        // Initialize default values
+        document.getElementById("font-size-slider").value = 128;
+        document.getElementById("font-weight-slider").value = 80;
+        document.getElementById("font-letter-spacing-slider").value = 0;
+        toggleControls();
+        toggleControls();
+    </script>
+</body>
+</html>
